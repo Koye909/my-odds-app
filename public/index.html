@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Odds Converter</title>
+    <style>
+        body { font-family: sans-serif; padding: 10px; max-width: 380px; margin: auto; background: #fdfdfd; }
+        .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 1px solid #eee; }
+        h4 { text-align: center; color: #333; margin: 10px 0 20px 0; }
+        label { font-size: 0.85em; font-weight: bold; color: #555; display: block; margin-bottom: 5px; }
+        input { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
+        button { width: 100%; padding: 14px; background: #28a745; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 17px; }
+        .result-box { margin-top: 25px; padding: 15px; background: #f8f9fa; border-radius: 10px; border: 1px solid #e9ecef; }
+        .res-text { font-size: 1.45em; font-weight: bold; margin: 12px 0; text-align: center; color: #212529; }
+        /* အိမ်ကွင်း/အဝေးကွင်း အရောင်များ */
+        .home-green { color: #28a745 !important; }
+        .away-red { color: #dc3545 !important; }
+        hr { border: 0.5px solid #dee2e6; margin: 15px 0; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h4>Odds Converter</h4>
+        <label>ဘော်ဒီ ပေါက်ကြေး:</label>
+        <input type="text" id="hdpLine" placeholder="-0.5 (Home) / 0.5 (Away)">
+        <input type="number" id="home" step="0.001" placeholder="Home Odds">
+        <input type="number" id="away" step="0.001" placeholder="Away Odds">
+        <hr>
+        <label>ဂိုးပေါင်း ပေါက်ကြေး:</label>
+        <input type="text" id="goalLine" placeholder="2.0,2.5">
+        <input type="number" id="over" step="0.001" placeholder="Over Odds">
+        <input type="number" id="under" step="0.001" placeholder="Under Odds">
+        <button onclick="calculate()">တွက်မည်</button>
+        <div class="result-box">
+            <div id="bodyRes" class="res-text">-</div>
+            <hr>
+            <div id="goalRes" class="res-text">-</div>
+        </div>
+    </div>
+    <script>
+        async function calculate() {
+            const payload = {
+                hdpLine: document.getElementById('hdpLine').value,
+                home: document.getElementById('home').value,
+                away: document.getElementById('away').value,
+                goalLine: document.getElementById('goalLine').value,
+                over: document.getElementById('over').value,
+                under: document.getElementById('under').value
+            };
+            try {
+                const res = await fetch('/convert', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                
+                const b = document.getElementById('bodyRes');
+                b.innerText = data.body.text;
+                b.className = "res-text " + data.body.className;
+
+                const g = document.getElementById('goalRes');
+                g.innerText = data.goal.text;
+                g.className = "res-text";
+            } catch (e) { alert("Error!"); }
+        }
+    </script>
+</body>
+</html>

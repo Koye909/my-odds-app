@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Odds Converter</title>
+    <style>
+        body { font-family: sans-serif; display: flex; justify-content: center; padding: 20px; background: #f0f2f5; }
+        .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 100%; max-width: 320px; }
+        h4 { text-align: center; margin: 0 0 15px 0; color: #333; }
+        .input-group { margin-bottom: 10px; }
+        label { font-size: 12px; color: #666; display: block; margin-bottom: 3px; font-weight: bold; }
+        input { width: 100%; padding: 7px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; font-size: 13px; }
+        button { width: 100%; padding: 10px; background: #28a745; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 15px; margin-top: 10px; font-weight: bold; }
+        .result-box { margin-top: 15px; background: #f8f9fa; border-radius: 8px; border: 1px solid #eee; text-align: center; }
+        .res-item { padding: 8px; border-bottom: 1px solid #eee; font-weight: bold; font-size: 15px; }
+        .res-item:last-child { border-bottom: none; padding-top: 12px; }
+        .home-green { color: #28a745; }
+        .away-red { color: #dc3545; }
+        hr { border: 0; border-top: 1px solid #eee; margin: 12px 0; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h4>Odds Converter</h4>
+        <div class="input-group">
+            <label>ဘော်ဒီ ပေါက်ကြေး</label>
+            <input type="text" id="hdpLine" placeholder="-0.75">
+            <div style="display:flex; gap:5px; margin-top:5px;">
+                <input type="number" id="home" step="0.001" placeholder="Home">
+                <input type="number" id="away" step="0.001" placeholder="Away">
+            </div>
+        </div>
+        <hr>
+        <div class="input-group">
+            <label>ဂိုးပေါင်း ပေါက်ကြေး</label>
+            <input type="text" id="goalLine" placeholder="3.0">
+            <div style="display:flex; gap:5px; margin-top:5px;">
+                <input type="number" id="over" step="0.001" placeholder="Over">
+                <input type="number" id="under" step="0.001" placeholder="Under">
+            </div>
+        </div>
+        <button onclick="convert()">တွက်မည်</button>
+        <div class="result-box">
+            <div id="bodyRes" class="res-item">ဘော်ဒီ</div>
+            <div id="goalRes" class="res-item">ဂိုးပေါင်း</div>
+        </div>
+    </div>
+
+    <script>
+        async function convert() {
+            const data = {
+                hdpLine: document.getElementById('hdpLine').value,
+                home: document.getElementById('home').value,
+                away: document.getElementById('away').value,
+                goalLine: document.getElementById('goalLine').value,
+                over: document.getElementById('over').value,
+                under: document.getElementById('under').value
+            };
+            const res = await fetch('/convert', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            const result = await res.json();
+            
+            const bEl = document.getElementById('bodyRes');
+            bEl.innerText = result.body.text;
+            bEl.className = 'res-item ' + result.body.className;
+
+            const gEl = document.getElementById('goalRes');
+            gEl.innerText = result.goal.text;
+            gEl.className = 'res-item ' + result.goal.className;
+        }
+    </script>
+</body>
+</html>

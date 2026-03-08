@@ -74,3 +74,7 @@ app.post('/convert', (req, res) => {
 });
 
 app.listen(3000, () => console.log("Server running at http://localhost:3000"));
+
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
